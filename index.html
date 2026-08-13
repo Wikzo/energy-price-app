@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Aarhus Electricity Prices</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="page-header">
+  <h1>Elpriser — Aarhus (DK1)</h1>
+  <p class="today-date" id="current-date"></p>
+</header>
+
+<nav class="tab-bar" role="tablist">
+  <button type="button" class="tab-btn" id="tab-today" role="tab" aria-selected="true">Today</button>
+  <button type="button" class="tab-btn" id="tab-tomorrow" role="tab" aria-selected="false">Tomorrow</button>
+</nav>
+
+<main>
+  <section class="day-section" id="today-section">
+    <div class="stat-row" id="today-stats">
+      <div class="stat">
+        <span class="stat-label">Cheapest</span>
+        <span class="stat-value" id="today-min-value">–</span>
+        <span class="stat-sub"><span class="trend trend-down">▼</span><span id="today-min-hour">–</span></span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Average</span>
+        <span class="stat-value" id="today-avg-value">–</span>
+        <span class="stat-sub"><span class="trend trend-flat">~</span></span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Most expensive</span>
+        <span class="stat-value" id="today-max-value">–</span>
+        <span class="stat-sub"><span class="trend trend-up">▲</span><span id="today-max-hour">–</span></span>
+      </div>
+    </div>
+    <div class="price-list" id="today-list"></div>
+  </section>
+
+  <section class="day-section" id="tomorrow-section" hidden>
+    <div id="tomorrow-content">
+      <div class="stat-row" id="tomorrow-stats">
+        <div class="stat">
+          <span class="stat-label">Cheapest</span>
+          <span class="stat-value" id="tomorrow-min-value">–</span>
+          <span class="stat-sub"><span class="trend trend-down">▼</span><span id="tomorrow-min-hour">–</span></span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Average</span>
+          <span class="stat-value" id="tomorrow-avg-value">–</span>
+          <span class="stat-sub"><span class="trend trend-flat">~</span></span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Most expensive</span>
+          <span class="stat-value" id="tomorrow-max-value">–</span>
+          <span class="stat-sub"><span class="trend trend-up">▲</span><span id="tomorrow-max-hour">–</span></span>
+        </div>
+      </div>
+      <div class="price-list" id="tomorrow-list"></div>
+    </div>
+    <p id="tomorrow-placeholder" class="placeholder" hidden>Tomorrow's prices aren't published yet — usually available around 13:00.</p>
+  </section>
+
+  <p id="status-message" class="status-message" hidden></p>
+</main>
+
+<footer class="bottom-bar">
+  <p class="cheapest-result" id="cheapest-result"></p>
+  <div class="cheapest-window-control">
+    <span class="control-label">Cheapest</span>
+    <button type="button" id="window-decrement" class="stepper-btn" aria-label="Decrease hours">−</button>
+    <span id="window-value" class="window-value">1</span>
+    <button type="button" id="window-increment" class="stepper-btn" aria-label="Increase hours">+</button>
+    <span class="control-label">h in a row</span>
+  </div>
+  <p class="attribution">Data provided by <a href="https://stromligning.dk" target="_blank" rel="noopener">Strømligning</a>.</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
