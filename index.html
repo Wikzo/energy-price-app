@@ -13,8 +13,8 @@
 </header>
 
 <nav class="tab-bar" role="tablist">
-  <button type="button" class="tab-btn" id="tab-today" role="tab" aria-selected="true">Today</button>
-  <button type="button" class="tab-btn" id="tab-tomorrow" role="tab" aria-selected="false">Tomorrow</button>
+  <button type="button" class="tab-btn" id="tab-today" role="tab" aria-selected="true">Today<span class="cheap-badge" id="today-cheap-badge" hidden></span></button>
+  <button type="button" class="tab-btn" id="tab-tomorrow" role="tab" aria-selected="false">Tomorrow<span class="cheap-badge" id="tomorrow-cheap-badge" hidden></span></button>
 </nav>
 
 <main>
@@ -40,27 +40,24 @@
   </section>
 
   <section class="day-section" id="tomorrow-section" hidden>
-    <div id="tomorrow-content">
-      <div class="stat-row" id="tomorrow-stats">
-        <div class="stat">
-          <span class="stat-label">Cheapest</span>
-          <span class="stat-value" id="tomorrow-min-value">–</span>
-          <span class="stat-sub"><span class="trend trend-down">▼</span><span id="tomorrow-min-hour">–</span></span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">Average</span>
-          <span class="stat-value" id="tomorrow-avg-value">–</span>
-          <span class="stat-sub"><span class="trend trend-flat">~</span></span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">Most expensive</span>
-          <span class="stat-value" id="tomorrow-max-value">–</span>
-          <span class="stat-sub"><span class="trend trend-up">▲</span><span id="tomorrow-max-hour">–</span></span>
-        </div>
+    <div class="stat-row" id="tomorrow-stats">
+      <div class="stat">
+        <span class="stat-label">Cheapest</span>
+        <span class="stat-value" id="tomorrow-min-value">–</span>
+        <span class="stat-sub"><span class="trend trend-down">▼</span><span id="tomorrow-min-hour">–</span></span>
       </div>
-      <div class="price-list" id="tomorrow-list"></div>
+      <div class="stat">
+        <span class="stat-label">Average</span>
+        <span class="stat-value" id="tomorrow-avg-value">–</span>
+        <span class="stat-sub"><span class="trend trend-flat">~</span></span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Most expensive</span>
+        <span class="stat-value" id="tomorrow-max-value">–</span>
+        <span class="stat-sub"><span class="trend trend-up">▲</span><span id="tomorrow-max-hour">–</span></span>
+      </div>
     </div>
-    <p id="tomorrow-placeholder" class="placeholder" hidden>Tomorrow's prices aren't published yet — usually available around 13:00.</p>
+    <div class="price-list" id="tomorrow-list"></div>
   </section>
 
   <p id="status-message" class="status-message" hidden></p>

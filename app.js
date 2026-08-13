@@ -169,10 +169,10 @@ async function main() {
 
   const todaySection = document.getElementById("today-section");
   const tomorrowSection = document.getElementById("tomorrow-section");
-  const tomorrowContent = document.getElementById("tomorrow-content");
-  const tomorrowPlaceholder = document.getElementById("tomorrow-placeholder");
   const tabToday = document.getElementById("tab-today");
   const tabTomorrow = document.getElementById("tab-tomorrow");
+  const todayCheapBadge = document.getElementById("today-cheap-badge");
+  const tomorrowCheapBadge = document.getElementById("tomorrow-cheap-badge");
   const resultEl = document.getElementById("cheapest-result");
 
   let entries;
@@ -192,6 +192,24 @@ async function main() {
   const todayHours = buildHourlyArray(entries, todayKey);
   const tomorrowHours = buildHourlyArray(entries, tomorrowKey);
   const currentHour = localHour(now);
+
+  const todayComplete = isComplete(todayHours);
+  const tomorrowComplete = isComplete(tomorrowHours);
+
+  if (!todayComplete) {
+    statusEl.hidden = false;
+    statusEl.classList.add("error");
+    statusEl.textContent = "Today's prices are incomplete or unavailable.";
+  }
+
+  tabTomorrow.hidden = !tomorrowComplete;
+
+  if (todayComplete && tomorrowComplete) {
+    const todayFutureMin = Math.min(...todayHours.slice(currentHour));
+    const tomorrowMin = Math.min(...tomorrowHours);
+    todayCheapBadge.hidden = !(todayFutureMin < tomorrowMin);
+    tomorrowCheapBadge.hidden = !(tomorrowMin < todayFutureMin);
+  }
 
   const MIN_WINDOW = 1;
   const MAX_WINDOW = 24;
@@ -231,7 +249,6 @@ async function main() {
     updateStepperButtons();
     updateTabs();
 
-    const todayComplete = isComplete(todayHours);
     let todayWindow = null;
     if (todayComplete) {
       todayWindow = findCheapestWindow(todayHours, windowSize, currentHour);
@@ -242,17 +259,10 @@ async function main() {
         currentHour,
         cheapestWindow: activeTab === "today" ? todayWindow : null,
       });
-    } else {
-      statusEl.hidden = false;
-      statusEl.classList.add("error");
-      statusEl.textContent = "Today's prices are incomplete or unavailable.";
     }
 
-    const tomorrowComplete = isComplete(tomorrowHours);
     let tomorrowWindow = null;
     if (tomorrowComplete) {
-      tomorrowContent.hidden = false;
-      tomorrowPlaceholder.hidden = true;
       tomorrowWindow = findCheapestWindow(tomorrowHours, windowSize, 0);
       renderDay({
         hours: tomorrowHours,
@@ -261,9 +271,6 @@ async function main() {
         currentHour: null,
         cheapestWindow: activeTab === "tomorrow" ? tomorrowWindow : null,
       });
-    } else {
-      tomorrowContent.hidden = true;
-      tomorrowPlaceholder.hidden = false;
     }
 
     if (activeTab === "today") {
