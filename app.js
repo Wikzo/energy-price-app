@@ -226,6 +226,7 @@ async function main() {
   }
 
   function render() {
+    now = new Date();
     windowValueEl.textContent = windowSize;
     updateStepperButtons();
     updateTabs();
