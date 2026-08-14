@@ -185,7 +185,6 @@ async function main() {
   const todayCheapBadge = document.getElementById("today-cheap-badge");
   const tomorrowCheapBadge = document.getElementById("tomorrow-cheap-badge");
   const resultEl = document.getElementById("cheapest-result");
-  const refreshBtn = document.getElementById("refresh-button");
 
   const MIN_WINDOW = 1;
   const MAX_WINDOW = 24;
@@ -310,17 +309,12 @@ async function main() {
   }
 
   async function refresh() {
-    refreshBtn.disabled = true;
-    refreshBtn.classList.add("spinning");
     try {
       await loadData();
-      render();
     } catch {
-      // error already surfaced via statusEl
-    } finally {
-      refreshBtn.disabled = false;
-      refreshBtn.classList.remove("spinning");
+      return; // error already surfaced via statusEl
     }
+    render();
   }
 
   decrementBtn.addEventListener("click", () => {
@@ -340,14 +334,14 @@ async function main() {
   tabToday.addEventListener("click", () => {
     activeTab = "today";
     render();
+    refresh();
   });
 
   tabTomorrow.addEventListener("click", () => {
     activeTab = "tomorrow";
     render();
+    refresh();
   });
-
-  refreshBtn.addEventListener("click", refresh);
 
   await refresh();
 }
