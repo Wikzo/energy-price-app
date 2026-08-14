@@ -251,7 +251,10 @@ async function main() {
       resultEl.textContent = "";
     } else if (windowResult) {
       const timeUntil = formatTimeUntil(deltaHoursToStart, now);
-      resultEl.textContent = `Cheapest ${windowSize}h in a row: ${formatHourRange(windowResult.start, windowResult.end)} (avg ${windowResult.avg.toFixed(2)} kr/kWh) — ${timeUntil}`;
+      resultEl.textContent = `Cheapest ${windowSize}h in a row: ${formatHourRange(windowResult.start, windowResult.end)} (avg ${windowResult.avg.toFixed(2)} kr/kWh) — `;
+      const timeUntilEl = document.createElement("strong");
+      timeUntilEl.textContent = timeUntil;
+      resultEl.appendChild(timeUntilEl);
     } else {
       resultEl.textContent = `Not enough hours left today for a ${windowSize}h window.`;
     }
