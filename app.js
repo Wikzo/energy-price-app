@@ -42,6 +42,18 @@ function formatPrice(value) {
   return `${value.toFixed(2)} kr`;
 }
 
+function formatTimeUntil(deltaHours, now) {
+  const nowFractionMs = now.getUTCMinutes() * 60000 + now.getUTCSeconds() * 1000 + now.getUTCMilliseconds();
+  const msUntil = deltaHours * 3600000 - nowFractionMs;
+  if (msUntil <= 0) return "now";
+  const totalMinutes = Math.round(msUntil / 60000);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (hours === 0) return `in ${minutes}m`;
+  if (minutes === 0) return `in ${hours}h`;
+  return `in ${hours}h ${minutes}m`;
+}
+
 function classifyTertiles(values) {
   const sorted = [...values].sort((a, b) => a - b);
   const n = sorted.length;
@@ -202,7 +214,7 @@ async function main() {
     statusEl.textContent = "Today's prices are incomplete or unavailable.";
   }
 
-  tabTomorrow.hidden = !tomorrowComplete;
+  tabTomorrow.disabled = !tomorrowComplete;
 
   if (todayComplete && tomorrowComplete) {
     const todayFutureMin = Math.min(...todayHours.slice(currentHour));
@@ -234,11 +246,12 @@ async function main() {
     tabTomorrow.setAttribute("aria-selected", String(activeTab === "tomorrow"));
   }
 
-  function updateResult(windowResult, complete) {
+  function updateResult(windowResult, complete, deltaHoursToStart) {
     if (!complete) {
       resultEl.textContent = "";
     } else if (windowResult) {
-      resultEl.textContent = `Cheapest ${windowSize}h in a row: ${formatHourRange(windowResult.start, windowResult.end)} (avg ${windowResult.avg.toFixed(2)} kr/kWh)`;
+      const timeUntil = formatTimeUntil(deltaHoursToStart, now);
+      resultEl.textContent = `Cheapest ${windowSize}h in a row: ${formatHourRange(windowResult.start, windowResult.end)} (avg ${windowResult.avg.toFixed(2)} kr/kWh) — ${timeUntil}`;
     } else {
       resultEl.textContent = `Not enough hours left today for a ${windowSize}h window.`;
     }
@@ -274,9 +287,9 @@ async function main() {
     }
 
     if (activeTab === "today") {
-      updateResult(todayWindow, todayComplete);
+      updateResult(todayWindow, todayComplete, todayWindow ? todayWindow.start - currentHour : 0);
     } else {
-      updateResult(tomorrowWindow, tomorrowComplete);
+      updateResult(tomorrowWindow, tomorrowComplete, tomorrowWindow ? 24 - currentHour + tomorrowWindow.start : 0);
     }
   }
 
