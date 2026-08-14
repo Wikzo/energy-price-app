@@ -177,7 +177,6 @@ function renderDay({ hours, listId, statsPrefix, currentHour, cheapestWindow }) 
 async function main() {
   const statusEl = document.getElementById("status-message");
   const currentDateEl = document.getElementById("current-date");
-  currentDateEl.textContent = headerDateFormatter.format(new Date());
 
   const todaySection = document.getElementById("today-section");
   const tomorrowSection = document.getElementById("tomorrow-section");
@@ -186,42 +185,7 @@ async function main() {
   const todayCheapBadge = document.getElementById("today-cheap-badge");
   const tomorrowCheapBadge = document.getElementById("tomorrow-cheap-badge");
   const resultEl = document.getElementById("cheapest-result");
-
-  let entries;
-  try {
-    entries = await fetchPrices();
-  } catch (err) {
-    statusEl.hidden = false;
-    statusEl.classList.add("error");
-    statusEl.textContent = `Couldn't load prices: ${err.message}`;
-    return;
-  }
-
-  const now = new Date();
-  const todayKey = localDateKey(now);
-  const tomorrowKey = localDateKey(new Date(now.getTime() + 24 * 3600 * 1000));
-
-  const todayHours = buildHourlyArray(entries, todayKey);
-  const tomorrowHours = buildHourlyArray(entries, tomorrowKey);
-  const currentHour = localHour(now);
-
-  const todayComplete = isComplete(todayHours);
-  const tomorrowComplete = isComplete(tomorrowHours);
-
-  if (!todayComplete) {
-    statusEl.hidden = false;
-    statusEl.classList.add("error");
-    statusEl.textContent = "Today's prices are incomplete or unavailable.";
-  }
-
-  tabTomorrow.disabled = !tomorrowComplete;
-
-  if (todayComplete && tomorrowComplete) {
-    const todayFutureMin = Math.min(...todayHours.slice(currentHour));
-    const tomorrowMin = Math.min(...tomorrowHours);
-    todayCheapBadge.hidden = !(todayFutureMin < tomorrowMin);
-    tomorrowCheapBadge.hidden = !(tomorrowMin < todayFutureMin);
-  }
+  const refreshBtn = document.getElementById("refresh-button");
 
   const MIN_WINDOW = 1;
   const MAX_WINDOW = 24;
@@ -231,6 +195,8 @@ async function main() {
   const windowValueEl = document.getElementById("window-value");
   const decrementBtn = document.getElementById("window-decrement");
   const incrementBtn = document.getElementById("window-increment");
+
+  let now, todayHours, tomorrowHours, currentHour, todayComplete, tomorrowComplete;
 
   function updateStepperButtons() {
     decrementBtn.disabled = windowSize <= MIN_WINDOW;
@@ -296,6 +262,67 @@ async function main() {
     }
   }
 
+  async function loadData() {
+    statusEl.hidden = true;
+    statusEl.classList.remove("error");
+
+    let entries;
+    try {
+      entries = await fetchPrices();
+    } catch (err) {
+      statusEl.hidden = false;
+      statusEl.classList.add("error");
+      statusEl.textContent = `Couldn't load prices: ${err.message}`;
+      throw err;
+    }
+
+    now = new Date();
+    currentDateEl.textContent = headerDateFormatter.format(now);
+    const todayKey = localDateKey(now);
+    const tomorrowKey = localDateKey(new Date(now.getTime() + 24 * 3600 * 1000));
+
+    todayHours = buildHourlyArray(entries, todayKey);
+    tomorrowHours = buildHourlyArray(entries, tomorrowKey);
+    currentHour = localHour(now);
+
+    todayComplete = isComplete(todayHours);
+    tomorrowComplete = isComplete(tomorrowHours);
+
+    if (!todayComplete) {
+      statusEl.hidden = false;
+      statusEl.classList.add("error");
+      statusEl.textContent = "Today's prices are incomplete or unavailable.";
+    }
+
+    if (activeTab === "tomorrow" && !tomorrowComplete) {
+      activeTab = "today";
+    }
+    tabTomorrow.disabled = !tomorrowComplete;
+
+    todayCheapBadge.hidden = true;
+    tomorrowCheapBadge.hidden = true;
+    if (todayComplete && tomorrowComplete) {
+      const todayFutureMin = Math.min(...todayHours.slice(currentHour));
+      const tomorrowMin = Math.min(...tomorrowHours);
+      todayCheapBadge.hidden = !(todayFutureMin < tomorrowMin);
+      tomorrowCheapBadge.hidden = !(tomorrowMin < todayFutureMin);
+    }
+  }
+
+  async function refresh() {
+    refreshBtn.disabled = true;
+    refreshBtn.classList.add("spinning");
+    try {
+      await loadData();
+      render();
+    } catch {
+      // error already surfaced via statusEl
+    } finally {
+      refreshBtn.disabled = false;
+      refreshBtn.classList.remove("spinning");
+    }
+  }
+
   decrementBtn.addEventListener("click", () => {
     if (windowSize > MIN_WINDOW) {
       windowSize--;
@@ -320,7 +347,9 @@ async function main() {
     render();
   });
 
-  render();
+  refreshBtn.addEventListener("click", refresh);
+
+  await refresh();
 }
 
 main();
