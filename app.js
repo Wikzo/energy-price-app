@@ -216,8 +216,13 @@ async function main() {
       resultEl.textContent = "";
     } else if (windowResult) {
       const timeUntil = formatTimeUntil(deltaHoursToStart, now);
-      resultEl.textContent = `Cheapest ${windowSize}h in a row: ${formatHourRange(windowResult.start, windowResult.end)} (avg ${windowResult.avg.toFixed(2)} kr/kWh) — `;
+      resultEl.textContent = "Cheapest ";
+      const windowSizeEl = document.createElement("strong");
+      windowSizeEl.textContent = `${windowSize}h`;
+      resultEl.appendChild(windowSizeEl);
+      resultEl.append(` in a row: ${formatHourRange(windowResult.start, windowResult.end)} (avg ${windowResult.avg.toFixed(2)} kr/kWh) `);
       const timeUntilEl = document.createElement("strong");
+      timeUntilEl.className = "time-until";
       timeUntilEl.textContent = timeUntil;
       resultEl.appendChild(timeUntilEl);
     } else {
