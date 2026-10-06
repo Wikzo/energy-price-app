@@ -1,6 +1,13 @@
 const TIME_ZONE = "Europe/Copenhagen";
 const API_BASE = "https://stromligning.dk/api/prices";
-const QUERY = "productId=nrgi_time&supplierId=konstant_c&customerGroupId=c";
+
+// TEMPORARY: two cities while moving from Aarhus to Vejle.
+// When Aarhus is no longer needed, delete it from CITIES (and the toggle in index.html).
+const CITIES = {
+  aarhus: { label: "Aarhus", query: "productId=nrgi_time&supplierId=konstant_c&customerGroupId=c" },
+  vejle: { label: "Vejle", query: "productId=altid-energi&supplierId=trefor_el-net_c&customerGroupId=c" },
+};
+const DEFAULT_CITY = "aarhus";
 
 const dateKeyFormatter = new Intl.DateTimeFormat("en-CA", {
   timeZone: TIME_ZONE,
@@ -94,13 +101,13 @@ function computeStats(hours) {
   };
 }
 
-async function fetchPrices() {
+async function fetchPrices(cityKey) {
   const now = new Date();
   const fromDate = new Date(now.getTime() - 24 * 3600 * 1000);
   fromDate.setUTCMinutes(0, 0, 0);
   const from = fromDate.toISOString();
   const to = new Date(now.getTime() + 48 * 3600 * 1000).toISOString();
-  const url = `${API_BASE}?${QUERY}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&aggregation=1h&aggregationMethod=mean`;
+  const url = `${API_BASE}?${CITIES[cityKey].query}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&aggregation=1h&aggregationMethod=mean`;
 
   const res = await fetch(url);
   if (!res.ok) {
@@ -190,6 +197,10 @@ async function main() {
   const MAX_WINDOW = 24;
   let windowSize = 1;
   let activeTab = "today";
+  let activeCity = DEFAULT_CITY;
+
+  const headingEl = document.getElementById("page-title");
+  const cityButtons = document.querySelectorAll(".city-btn");
 
   const windowValueEl = document.getElementById("window-value");
   const decrementBtn = document.getElementById("window-decrement");
@@ -209,6 +220,17 @@ async function main() {
     tabTomorrow.classList.toggle("active", activeTab === "tomorrow");
     tabToday.setAttribute("aria-selected", String(activeTab === "today"));
     tabTomorrow.setAttribute("aria-selected", String(activeTab === "tomorrow"));
+  }
+
+  function updateCity() {
+    const label = CITIES[activeCity].label;
+    headingEl.textContent = `Elpriser — ${label} (DK1)`;
+    document.title = `${label} Electricity Prices`;
+    cityButtons.forEach((btn) => {
+      const isActive = btn.dataset.city === activeCity;
+      btn.classList.toggle("active", isActive);
+      btn.setAttribute("aria-pressed", String(isActive));
+    });
   }
 
   function updateResult(windowResult, complete, deltaHoursToStart) {
@@ -273,7 +295,7 @@ async function main() {
 
     let entries;
     try {
-      entries = await fetchPrices();
+      entries = await fetchPrices(activeCity);
     } catch (err) {
       statusEl.hidden = false;
       statusEl.classList.add("error");
@@ -323,6 +345,15 @@ async function main() {
     render();
   }
 
+  cityButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (btn.dataset.city === activeCity) return;
+      activeCity = btn.dataset.city;
+      updateCity();
+      refresh();
+    });
+  });
+
   decrementBtn.addEventListener("click", () => {
     if (windowSize > MIN_WINDOW) {
       windowSize--;
@@ -349,6 +380,7 @@ async function main() {
     refresh();
   });
 
+  updateCity();
   await refresh();
 }
 

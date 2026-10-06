@@ -42,6 +42,32 @@ body {
   margin: 0 0 0.1rem;
 }
 
+.city-toggle {
+  display: inline-flex;
+  gap: 0.2rem;
+  background: var(--color-track);
+  border-radius: 999px;
+  padding: 0.15rem;
+  margin: 0.2rem 0 0.25rem;
+}
+
+.city-btn {
+  border: none;
+  background: transparent;
+  padding: 0.2rem 0.8rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.city-btn.active {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 1px 2px rgba(20, 23, 31, 0.12);
+}
+
 .today-date {
   margin: 0;
   color: var(--color-text-muted);

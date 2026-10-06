@@ -8,7 +8,11 @@
 </head>
 <body>
 <header class="page-header">
-  <h1>Elpriser — Aarhus (DK1)</h1>
+  <h1 id="page-title">Elpriser — Aarhus (DK1)</h1>
+  <div class="city-toggle" role="group" aria-label="City">
+    <button type="button" class="city-btn active" data-city="aarhus" aria-pressed="true">Aarhus</button>
+    <button type="button" class="city-btn" data-city="vejle" aria-pressed="false">Vejle</button>
+  </div>
   <p class="today-date" id="current-date"></p>
 </header>
 
