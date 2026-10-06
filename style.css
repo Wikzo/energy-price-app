@@ -47,25 +47,27 @@ body {
   gap: 0.2rem;
   background: var(--color-track);
   border-radius: 999px;
-  padding: 0.15rem;
-  margin: 0.2rem 0 0.25rem;
+  padding: 0.2rem;
+  margin: 0.25rem 0 0.3rem;
 }
 
 .city-btn {
   border: none;
   background: transparent;
-  padding: 0.2rem 0.8rem;
+  padding: 0.35rem 1rem;
+  min-height: 2rem;
   border-radius: 999px;
-  font-weight: 700;
-  font-size: 0.75rem;
+  font-weight: 600;
+  font-size: 0.8rem;
   color: var(--color-text-muted);
   cursor: pointer;
 }
 
 .city-btn.active {
-  background: var(--color-surface);
-  color: var(--color-text);
-  box-shadow: 0 1px 2px rgba(20, 23, 31, 0.12);
+  background: var(--color-highlight);
+  color: #ffffff;
+  font-weight: 800;
+  box-shadow: 0 1px 3px rgba(20, 23, 31, 0.3);
 }
 
 .today-date {
