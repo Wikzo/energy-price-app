@@ -225,7 +225,6 @@ async function main() {
   function updateCity() {
     const label = CITIES[activeCity].label;
     headingEl.textContent = `Elpriser — ${label} (DK1)`;
-    document.title = `${label} Electricity Prices`;
     cityButtons.forEach((btn) => {
       const isActive = btn.dataset.city === activeCity;
       btn.classList.toggle("active", isActive);
